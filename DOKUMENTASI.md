@@ -2,6 +2,7 @@
 1. Maulia Dwi Anthesa Sugeha - 235150201111060
 2. Irene Noer Ramadhany - 235150207111064
 
+Pada arsitektur awal terdapat 2 node worker. Lalu, kami melakukan penambahan 1 node worker sehingga total menjadi 3 node worker.
 ## **Seluruh node worker (Worker 1, Worker 2, dan Worker 3) berhasil dihubungkan ke node master dan menjadi bagian dari cluster Kubernetes.**
 
 Worker 1 berhasil terhubung ke master
