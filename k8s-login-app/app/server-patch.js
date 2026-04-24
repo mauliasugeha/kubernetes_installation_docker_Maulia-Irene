@@ -1,4 +1,5 @@
 const os = require('os');
+
 const serverInfo = {
   hostname: os.hostname(),
   podName: process.env.POD_NAME || 'unknown',

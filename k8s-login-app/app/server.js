@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const session = require('express-session');
+const promBundle = require('express-prom-bundle');
+const os = require('os');
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(__dirname, 'public/uploads');
@@ -36,9 +38,23 @@ const upload = multer({
 const app = express();
 const port = process.env.PORT || 3000;
 
+const metricsMiddleware = promBundle({
+  includeMethod: true,
+  includePath: true,
+  promClient: {
+    collectDefaultMetrics: {
+      timeout: 5000
+    }
+  }
+});
+
+app.use(metricsMiddleware);
+
 // Database configuration
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST
+
+ || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'Otomasi-13',
   database: process.env.DB_NAME || 'loginapp'
@@ -246,6 +262,26 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Add this after the health route
+app.get('/server-info', (req, res) => {
+  res.json(serverInfo);
+});
+
+// Insert this line before app.listen
+app.use((req, res, next) => {
+  res.setHeader('X-Served-By', serverInfo.podName);
+  next();
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+//const os = require('os');
+
+const serverInfo = {
+  hostname: os.hostname(),
+  podName: process.env.POD_NAME || 'unknown',
+  nodeName: process.env.NODE_NAME || 'unknown'
+};
+
